@@ -61,28 +61,27 @@ g_audio_paused = settings.getSetting( "audio_pause_gid" )
 g_audio_resumed = settings.getSetting( "audio_resume_gid" )
 g_audio_stopped = settings.getSetting( "audio_stop_gid" )
 g_audio_ended = settings.getSetting( "audio_end_gid" )
-	
 
 #Check if INSTEON Hub information has been entered
 if (degug_mode == "Yes"):
     if (hip == "0.0.0.0"):
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_ip, time1, __icon__))
-        print("INSTEON Addon - Hub IP Address Not Set")
+        log("INSTEON Addon - Hub IP Address Not Set")
     else:
         if (hport == ""):
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_port, time1, __icon__))
-            print("INSTEON Addon - Hub Port Not Set")
+            log("INSTEON Addon - Hub Port Not Set")
         else:
             if (huser == ""):
                 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_user, time1, __icon__))
-                print("INSTEON Addon - Hub User Name Not Set")
+                log("INSTEON Addon - Hub User Name Not Set")
             else:
                 if (hpword == ""):
                     xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_pword, time1, __icon__))
-                    print("INSTEON Addon - Hub Password Not Set")
+                    log("INSTEON Addon - Hub Password Not Set")
                 else:
                     xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_start, time2, __icon__))
-                    print("INSTEON Addon - Hub Information Set")
+                    log("INSTEON Addon - Hub Information Set")
 
 
 #Initialize Shortcut INSTEON Hub Groups (Scenes)
@@ -170,7 +169,19 @@ if (str(settings.getSetting("short_active")) == "Yes"):
 else:
     shortActive = 0
 
+def log( text, severity=xbmc.LOGDEBUG ):
+    if type( text).__name__=='unicode':
+        text = text.encode('utf-8')
+    message = ('[%s] - %s' % ( __addonname__,text.__str__() ) )
+    xbmc.log( msg=message, level=severity )
 
+def insteon_direct( ip = "0.0.0.0", port = "25105", username = "", password = "", command = "" ):
+    auth=HTTPBasicAuth( username, password )
+    url = u'http://%s:%s/3?%s=I=3' % ( ip, port, command )
+    log( "Command: %s" % command )
+    log( "Full URL: " % url )
+    r = requests.post( url=url, auth=auth )
+    
 #Shortcut Dialog Window
 
 #get actioncodes from https://github.com/xbmc/xbmc/blob/master/xbmc/guilib/Key.h
@@ -214,13 +225,11 @@ class MyClass(xbmcgui.WindowDialog):
     def onControl(self, control):
         if control == self.button0:
             if (shortActive1 == 1):
-                auth=HTTPBasicAuth( huser , hpword )
-                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, shortGid1 )
-                r = requests.post(url=url, auth=auth)
+                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = shortGid1 )
                 if (str(settings.getSetting("short_1_win")) == "None"):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Shortcut 1 Active - XBMC Window Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Shortcut 1 Active - XBMC Window Not Set")
+                        log("INSTEON Addon - Shortcut 1 Active - XBMC Window Not Set")
                 else:
                     if (str(settings.getSetting("short_1_win")) == "Movies - Recently Added"):
                         xbmc.executebuiltin("ActivateWindow(VideoLibrary,RecentlyAddedMovies,return)")
@@ -239,9 +248,7 @@ class MyClass(xbmcgui.WindowDialog):
                 self.close()
         if control == self.button1:
             if (shortActive2 == 1): 
-                auth=HTTPBasicAuth( huser , hpword )
-                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, shortGid2 )
-                r = requests.post(url=url, auth=auth)
+                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = shortGid2 )
                 if (str(settings.getSetting("short_1_win")) == "None"):
                     xbmc.executebuiltin('Notification(%s, Debug not completed, %d, %s)'%(__addonname__,time1, __icon__))
                 else:
@@ -262,9 +269,7 @@ class MyClass(xbmcgui.WindowDialog):
                 self.close()
         if control == self.button2:
             if (shortActive3 == 1): 
-                auth=HTTPBasicAuth( huser , hpword )
-                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, shortGid3 )
-                r = requests.post(url=url, auth=auth)
+                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = shortGid3 )
                 if (str(settings.getSetting("short_1_win")) == "None"):
                     xbmc.executebuiltin('Notification(%s, Debug not completed, %d, %s)'%(__addonname__,time1, __icon__))
                 else:
@@ -285,9 +290,7 @@ class MyClass(xbmcgui.WindowDialog):
                 self.close()
         if control == self.button3:
             if (shortActive4 == 1): 
-                auth=HTTPBasicAuth( huser , hpword )
-                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, shortGid4 )
-                r = requests.post(url=url, auth=auth)
+                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = shortGid4 )
                 if (str(settings.getSetting("short_1_win")) == "None"):
                     xbmc.executebuiltin('Notification(%s, Debug not completed, %d, %s)'%(__addonname__,time1, __icon__))
                 else:
@@ -308,9 +311,7 @@ class MyClass(xbmcgui.WindowDialog):
                 self.close()
         if control == self.button4:
             if (shortActive5 == 1): 
-                auth=HTTPBasicAuth( huser , hpword )
-                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, shortGid5 )
-                r = requests.post(url=url, auth=auth)
+                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = shortGid5 )
                 if (str(settings.getSetting("short_1_win")) == "None"):
                     xbmc.executebuiltin('Notification(%s, Debug not completed, %d, %s)'%(__addonname__,time1, __icon__))
                 else:
@@ -333,7 +334,6 @@ class MyClass(xbmcgui.WindowDialog):
 #Do the magic
 
 class MyPlayer(xbmc.Player):
-
     def onPlayBackStarted(self):
         xbmc.sleep(200) # it may take some time for xbmc to read tag info after playback started
         if xbmc.Player().isPlayingVideo():
@@ -341,74 +341,57 @@ class MyPlayer(xbmc.Player):
                 if (str(settings.getSetting("video_start_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Video Started - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Video Started - Scene Active - ID Not Set")
+                        log( "INSTEON Addon - Video Started - Scene Active - ID Not Set", xbmc.LOGNOTICE )
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                 else:
                     if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_started )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_started )
+                            log( "INSTEON Addon - Video Started - Scene Active - Night Mode On - Is Night" )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Started - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Started - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_video_started)
-                                print("INSTEON Addon - HTTP URL: " + url)
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Started - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Started - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Video Started - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_started )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_started )
+                        log("INSTEON Addon - Video Started - Scene Active - Night Mode Off")
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Video Started - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Video Started - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_video_started)
-                            print("INSTEON Addon - HTTP URL: " + url)
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Video Started - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Video Started - Scene Inactive")
-
+    
         if xbmc.Player().isPlayingAudio() == True:
             if (str(settings.getSetting("audio_started")) == "Yes"):
                 if (str(settings.getSetting("audio_start_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Audio Started - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Audio Started - Scene Active - ID Not Set")
+                        log("INSTEON Addon - Audio Started - Scene Active - ID Not Set")
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                 else:
                     if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_started )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_started )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Started - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Started - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_audio_started)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Audio Started - Scene Active - Night Mode On - Is Night")
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Started - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Started - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Audio Started - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_started )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_started )
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Audio Started - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Audio Started - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_audio_started)
-                            print("INSTEON Addon - HTTP URL: " + url)
+                            log("INSTEON Addon - Audio Started - Scene Active - Night Mode Off")
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Audio Started - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Audio Started - Scene Inactive")
+                    log("INSTEON Addon - Audio Started - Scene Inactive")
 
     def onPlayBackStopped(self):
         if (VIDEO == 1):
@@ -416,74 +399,58 @@ class MyPlayer(xbmc.Player):
                 if (str(settings.getSetting("video_stop_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Video Stopped - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Video Stopped - Scene Active - ID Not Set")
+                        log("INSTEON Addon - Video Stopped - Scene Active - ID Not Set")
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
-            	else:
-            	    if (night_mode == "Yes"):
+                else:
+                    if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_stopped )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_stopped )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Stopped - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Stopped - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_video_stopped)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Video Stopped - Scene Active - Night Mode On - Is Night")
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Stopped - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Stopped - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Video Stopped - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_stopped )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_stopped )
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Video Stopped - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Video Stopped - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_video_stopped)
-                            print("INSTEON Addon - HTTP URL: " + url)
+                            log("INSTEON Addon - Video Stopped - Scene Active - Night Mode Off")
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Video Stopped - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Video Stopped - Scene Inactive")
+                    log("INSTEON Addon - Video Stopped - Scene Inactive")
 
         if (AUDIO == 1):
             if (str(settings.getSetting("audio_stopped")) == "Yes"):
                 if (str(settings.getSetting("audio_stop_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Audio Stopped - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Audio Stopped - Scene Active - ID Not Set")
+                        log("INSTEON Addon - Audio Stopped - Scene Active - ID Not Set")
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
-            	else:
-            	    if (night_mode == "Yes"):
+                else:
+                    if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_stopped )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_stopped )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Stopped - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Stopped - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_audio_stopped)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Audio Stopped - Scene Active - Night Mode On - Is Night")
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Stopped - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Stopped - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Audio Stopped - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_stopped )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_stopped )
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Audio Stopped - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Audio Stopped - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_audio_stopped)
-                            print("INSTEON Addon - HTTP URL: " + url)
+                            log("INSTEON Addon - Audio Stopped - Scene Active - Night Mode Off")
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Audio Stopped - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Audio Stopped - Scene Inactive")
+                    log("INSTEON Addon - Audio Stopped - Scene Inactive")
 
     def onPlayBackEnded(self):
         if (VIDEO == 1):
@@ -491,74 +458,58 @@ class MyPlayer(xbmc.Player):
                 if (str(settings.getSetting("video_end_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Video Ended - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Video Ended - Scene Active - ID Not Set")
+                        log("INSTEON Addon - Video Ended - Scene Active - ID Not Set")
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
-            	else:
-            	    if (night_mode == "Yes"):
+                else:
+                    if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_ended )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_ended )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Ended - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Ended - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_video_ended)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Video Ended - Scene Active - Night Mode On - Is Night")
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Ended - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Ended - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Video Ended - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_ended )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_ended )
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Video Ended - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Video Ended - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_video_ended)
-                            print("INSTEON Addon - HTTP URL: " + url)
+                            log("INSTEON Addon - Video Ended - Scene Active - Night Mode Off")
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Video Ended - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Video Ended - Scene Inactive")
+                    log("INSTEON Addon - Video Ended - Scene Inactive")
 
         if (AUDIO == 1):
             if (str(settings.getSetting("audio_ended")) == "Yes"):
                 if (str(settings.getSetting("audio_end_gid")) == ""):
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Audio Ended - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Audio Ended - Scene Active - ID Not Set")
+                        log("INSTEON Addon - Audio Ended - Scene Active - ID Not Set")
                     else:
                         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
-            	else:
-            	    if (night_mode == "Yes"):
+                else:
+                    if (night_mode == "Yes"):
                         if (night_switch == 1):
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_ended )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_ended )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Ended - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Ended - Scene Active - Night Mode On - Is Night")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_audio_ended)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Audio Ended - Scene Active - Night Mode On - Is Night")
                         else:
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Ended - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Ended - Scene Active - Night Mode On - Not Night")
+                                log("INSTEON Addon - Audio Ended - Scene Active - Night Mode On - Not Night")
                     else:
-                        auth=HTTPBasicAuth( huser , hpword )
-                        url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_ended )
-                        r = requests.post(url=url, auth=auth)
+                        insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_ended )
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Audio Ended - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Audio Ended - Scene Active - Night Mode Off")
-                            print("INSTEON Addon - Group (Scene) ID: " + g_audio_ended)
-                            print("INSTEON Addon - HTTP URL: " + url)
+                            log("INSTEON Addon - Audio Ended - Scene Active - Night Mode Off")
             else:
                 if (degug_mode == "Yes"):
                     xbmc.executebuiltin('Notification(%s, Audio Ended - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                    print("INSTEON Addon - Audio Ended - Scene Inactive")
+                    log("INSTEON Addon - Audio Ended - Scene Inactive")
 
 
 player=MyPlayer()
@@ -590,39 +541,31 @@ while( not xbmc.abortRequested ):
                     if (str(settings.getSetting("video_pause_gid")) == ""):
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Video Paused - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Video Paused - Scene Active - ID Not Set")
+                            log("INSTEON Addon - Video Paused - Scene Active - ID Not Set")
                         else:
                             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                     else:
                         if (night_mode == "Yes"):
                             if (night_switch == 1):
                                 VPAUSE = 1
-                                auth=HTTPBasicAuth( huser , hpword )
-                                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_paused )
-                                r = requests.post(url=url, auth=auth)
+                                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_paused )
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Video Paused - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Video Paused - Scene Active - Night Mode On - Is Night")
-                                    print("INSTEON Addon - Group (Scene) ID: " + g_video_paused)
-                                    print("INSTEON Addon - HTTP URL: " + url)
+                                    log("INSTEON Addon - Video Paused - Scene Active - Night Mode On - Is Night")
                             else:
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Video Paused - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Video Paused - Scene Active - Night Mode On - Not Night")
+                                    log("INSTEON Addon - Video Paused - Scene Active - Night Mode On - Not Night")
                         else:
                             VPAUSE = 1
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_paused )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_paused )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Paused - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Paused - Scene Active - Night Mode Off")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_video_paused)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Video Paused - Scene Active - Night Mode Off")
                 else:
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Video Paused - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Video Paused - Scene Inactive")
+                        log("INSTEON Addon - Video Paused - Scene Inactive")
 
 
 #Check unpause state - is there a better way?
@@ -633,37 +576,29 @@ while( not xbmc.abortRequested ):
                         if (str(settings.getSetting("video_resume_gid")) == ""):
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Video Resumed - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Video Resumed - Scene Active - ID Not Set")
+                                log("INSTEON Addon - Video Resumed - Scene Active - ID Not Set")
                             else:
                                 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                         else:
                             if (night_mode == "Yes"):
                                 if (night_switch == 1):
-                                    auth=HTTPBasicAuth( huser , hpword )
-                                    url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_resumed )
-                                    r = requests.post(url=url, auth=auth)
+                                    insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_resumed )
                                     if (degug_mode == "Yes"):
                                         xbmc.executebuiltin('Notification(%s, Video Resumed - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                        print("INSTEON Addon - Video Resumed - Scene Active - Night Mode On - Is Night")
-                                        print("INSTEON Addon - Group (Scene) ID: " + g_video_resumed)
-                                        print("INSTEON Addon - HTTP URL: " + url)
+                                        log("INSTEON Addon - Video Resumed - Scene Active - Night Mode On - Is Night")
                                 else:
                                     if (degug_mode == "Yes"):
                                         xbmc.executebuiltin('Notification(%s, Video Resumed - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                        print("INSTEON Addon - Video Resumed - Scene Active - Night Mode On - Not Night")
+                                        log("INSTEON Addon - Video Resumed - Scene Active - Night Mode On - Not Night")
                             else:
-                                auth=HTTPBasicAuth( huser , hpword )
-                                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_video_resumed )
-                                r = requests.post(url=url, auth=auth)
+                                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_video_resumed )
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Video Resumed - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Video Resumed - Scene Active - Night Mode Off")
-                                    print("INSTEON Addon - Group (Scene) ID: " + g_video_resumed)
-                                    print("INSTEON Addon - HTTP URL: " + url)
+                                    log("INSTEON Addon - Video Resumed - Scene Active - Night Mode Off")
                     else:
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Video Resumed - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Video Resumed - Scene Inactive")
+                            log("INSTEON Addon - Video Resumed - Scene Inactive")
             
 
         else:
@@ -677,39 +612,31 @@ while( not xbmc.abortRequested ):
                     if (str(settings.getSetting("audio_pause_gid")) == ""):
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Audio Paused - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Audio Paused - Scene Active - ID Not Set")
+                            log("INSTEON Addon - Audio Paused - Scene Active - ID Not Set")
                         else:
                             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                     else:
                         if (night_mode == "Yes"):
                             if (night_switch == 1):
                                 APAUSE = 1
-                                auth=HTTPBasicAuth( huser , hpword )
-                                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_paused )
-                                r = requests.post(url=url, auth=auth)
+                                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_paused )
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Audio Paused - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Audio Paused - Scene Active - Night Mode On - Is Night")
-                                    print("INSTEON Addon - Group (Scene) ID: " + g_audio_paused)
-                                    print("INSTEON Addon - HTTP URL: " + url)
+                                    log("INSTEON Addon - Audio Paused - Scene Active - Night Mode On - Is Night")
                             else:
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Audio Paused - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Audio Paused - Scene Active - Night Mode On - Not Night")
+                                    log("INSTEON Addon - Audio Paused - Scene Active - Night Mode On - Not Night")
                         else:
                             APAUSE = 1
-                            auth=HTTPBasicAuth( huser , hpword )
-                            url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_paused )
-                            r = requests.post(url=url, auth=auth)
+                            insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_paused )
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Paused - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Paused - Scene Active - Night Mode Off")
-                                print("INSTEON Addon - Group (Scene) ID: " + g_audio_paused)
-                                print("INSTEON Addon - HTTP URL: " + url)
+                                log("INSTEON Addon - Audio Paused - Scene Active - Night Mode Off")
                 else:
                     if (degug_mode == "Yes"):
                         xbmc.executebuiltin('Notification(%s, Audio Paused - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                        print("INSTEON Addon - Audio Paused - Scene Inactive")
+                        log("INSTEON Addon - Audio Paused - Scene Inactive")
                          
 #Check unpause state - is there a better way?
             if (APAUSE == 1):
@@ -719,37 +646,29 @@ while( not xbmc.abortRequested ):
                         if (str(settings.getSetting("audio_resume_gid")) == ""):
                             if (degug_mode == "Yes"):
                                 xbmc.executebuiltin('Notification(%s, Audio Resumed - Scene Active - ID Not Set, %d, %s)'%(__addonname__,time1, __icon__))
-                                print("INSTEON Addon - Audio Resumed - Scene Active - ID Not Set")
+                                log("INSTEON Addon - Audio Resumed - Scene Active - ID Not Set")
                             else:
                                 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,plugin_gid, time1, __icon__))
                         else:
                             if (night_mode == "Yes"):
                                 if (night_switch == 1):
-                                    auth=HTTPBasicAuth( huser , hpword )
-                                    url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_resumed )
-                                    r = requests.post(url=url, auth=auth)
+                                    insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_resumed )
                                     if (degug_mode == "Yes"):
                                         xbmc.executebuiltin('Notification(%s, Audio Resumed - Scene Active - Night Mode On - Is Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                        print("INSTEON Addon - Audio Resumed - Scene Active - Night Mode On - Is Night")
-                                        print("INSTEON Addon - Group (Scene) ID: " + g_audio_resumed)
-                                        print("INSTEON Addon - HTTP URL: " + url)
+                                        log("INSTEON Addon - Audio Resumed - Scene Active - Night Mode On - Is Night")
                                 else:
                                     if (degug_mode == "Yes"):
                                         xbmc.executebuiltin('Notification(%s, Audio Resumed - Scene Active - Night Mode On - Not Night, %d, %s)'%(__addonname__,time1, __icon__))
-                                        print("INSTEON Addon - Audio Resumed - Scene Active - Night Mode On - Not Night")
+                                        log("INSTEON Addon - Audio Resumed - Scene Active - Night Mode On - Not Night")
                             else:
-                                auth=HTTPBasicAuth( huser , hpword )
-                                url = 'http://%s:%s/0?11%s=I=0' % ( hip, hport, g_audio_resumed )
-                                r = requests.post(url=url, auth=auth)
+                                insteon_direct( ip = hip, port = hport, username = huser, password = hpword, command = g_audio_resumed )
                                 if (degug_mode == "Yes"):
                                     xbmc.executebuiltin('Notification(%s, Audio Resumed - Scene Active - Night Mode Off, %d, %s)'%(__addonname__,time1, __icon__))
-                                    print("INSTEON Addon - Audio Resumed - Scene Active - Night Mode Off")
-                                    print("INSTEON Addon - Group (Scene) ID: " + g_audio_resumed)
-                                    print("INSTEON Addon - HTTP URL: " + url)
+                                    log("INSTEON Addon - Audio Resumed - Scene Active - Night Mode Off")
                     else:
                         if (degug_mode == "Yes"):
                             xbmc.executebuiltin('Notification(%s, Audio Resumed - Scene Inactive, %d, %s)'%(__addonname__,time1, __icon__))
-                            print("INSTEON Addon - Audio Resumed - Scene Inactive")
+                            log("INSTEON Addon - Audio Resumed - Scene Inactive")
 
 #Night Mode Timer Check
 
